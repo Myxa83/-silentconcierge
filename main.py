@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 from datetime import datetime
+import pytz  # Додано для часових поясів
 
 # Завантаження .env або Secrets
 load_dotenv()
@@ -82,8 +83,9 @@ async def найм(ctx, date: str, time: str, start_time: str, server: str, whis
         return await ctx.send("❌ Тільки організатор може створити найм.")
 
     try:
-        dt = datetime.strptime(f"{date} {time}", "%d.%m.%Y %H:%M")
-        st = datetime.strptime(f"{date} {start_time}", "%d.%m.%Y %H:%M")
+        tz = pytz.timezone("Europe/London")
+        dt = tz.localize(datetime.strptime(f"{date} {time}", "%d.%m.%Y %H:%M"))
+        st = tz.localize(datetime.strptime(f"{date} {start_time}", "%d.%m.%Y %H:%M"))
     except ValueError:
         return await ctx.send("❌ Формат: !найм 06.05.2025 18:00 18:10 Kamasylvia5 Myxa 15")
 
