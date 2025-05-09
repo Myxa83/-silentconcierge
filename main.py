@@ -92,7 +92,7 @@ async def найм(ctx, date: str, time: str, server: str, whisper: str, slots: 
     raid_data['channel_id'] = ctx.channel.id
 
     embed = discord.Embed(
-        title="**Гільдійні боси з**\n**SilentCove**",
+        title="```diff\n+ Гільдійні боси з SilentCove\n- @Муха\n```",
         description=f"**{date}**",
         color=discord.Color.teal()
     )
@@ -145,7 +145,7 @@ async def update_embed(closed=False):
         embed.set_field_at(8, name="🟩 Залишилось:", value=f"`{raid_data['slots'] - raid_data['taken']}`", inline=True)
         if closed:
             embed.color = discord.Color.dark_gray()
-            embed.set_field_at(0, name="✅ Найм завершено:", value="Всі місця зайняті або найм закрито.", inline=False)
+            embed.set_field_at(0, name="🔒 Найм завершено:", value="**Найм закрито. Всі місця зайнято.**", inline=False)
             embed.set_footer(text="Silent Concierge | Найм завершено")
         await message.edit(embed=embed)
     except:
