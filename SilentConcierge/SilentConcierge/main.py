@@ -10,8 +10,8 @@ from discord.ext import commands
 import random
 
 # --- DEBUG: перевірка токена ---
-print("DEBUG TOKEN:", os.getenv("DISCORD_BOT_TOKEN"))
-print("DEBUG TOKEN:", TOKEN) 
+TOKEN = os.getenv("TOKEN")
+print("DEBUG TOKEN:", TOKEN)
 
 # --- Інтенції ---
 intents = discord.Intents.default()
