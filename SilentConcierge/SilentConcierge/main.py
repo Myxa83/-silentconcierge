@@ -61,4 +61,4 @@ async def hello(ctx):
     await ctx.send(f"Привіт, {ctx.author.name}! Я тут, як завжди")
 
 # --- Запуск бота ---
-bot.run(os.getenv("DISCORD_BOT_TOKEN"))
+bot.run(os.getenv("TOKEN"))
