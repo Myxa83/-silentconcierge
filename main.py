@@ -23,7 +23,7 @@ intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # --- Конфіг ---
-OWNER_ID = 123456789012345678  # 🔺 Заміни на свій Discord ID
+OWNER_ID = 279395551198445568  # 🔺 Заміни на свій Discord ID
 raid_data = {
     'slots': 0,
     'taken': 0,
