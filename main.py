@@ -98,7 +98,7 @@ async def найм(ctx, date: str, time: str, start_time: str, server: str, whis
         color=discord.Color.teal()
     )
     embed.add_field(name="🔴 Шепотіть:", value=f"**{whisper}**", inline=False)
-   embed.add_field(name="🧭 Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**", inline=False)
+    embed.add_field(name="🧭 Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**", inline=False)
     embed.add_field(name="🌍 Сервер:", value=f"`{server}` *(уточніть в ПМ)*", inline=False)
     embed.add_field(name="⏱ Старт:", value=f"<t:{int(st.timestamp())}:t>, після босів **LoML**", inline=False)
     embed.add_field(name="🛣 Шлях:", value="Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*", inline=False)
@@ -149,3 +149,9 @@ async def update_embed(closed=False):
             embed.set_field_at(0, name="🔒 Найм завершено:", value="**Найм закрито. Всі місця зайнято.**", inline=False)
             embed.set_footer(text="Silent Concierge | Найм завершено")
         await message.edit(embed=embed)
+    except:
+        pass
+
+# --- Запуск ---
+bot.run(TOKEN)
+
