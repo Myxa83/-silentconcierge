@@ -85,7 +85,7 @@ async def найм(ctx, date: str, time: str, start_time: str, server: str, whis
         dt = datetime.strptime(f"{date} {time}", "%d.%m.%Y %H:%M")
         st = datetime.strptime(f"{date} {start_time}", "%d.%m.%Y %H:%M")
     except ValueError:
-        return await ctx.send("❌ Формат: !найм 06.05.2025 18:00 18:10 Kamasylvia5 @MUSHA 15")
+        return await ctx.send("❌ Формат: !найм 06.05.2025 18:00 18:10 Kamasylvia5 Myxa 15")
 
     raid_data['slots'] = slots
     raid_data['taken'] = 0
@@ -93,19 +93,20 @@ async def найм(ctx, date: str, time: str, start_time: str, server: str, whis
     raid_data['channel_id'] = ctx.channel.id
 
     embed = discord.Embed(
-        title="```diff\n+ Гільдійні боси з SilentCove\n- @Муха\n```",
+        title="**Гільдійні боси з SilentCove**",
         description=f"**{date}**",
         color=discord.Color.teal()
     )
-    embed.add_field(name="🔴 Шепотіть:", value=f"**{whisper}**", inline=False)
-    embed.add_field(name="🧭 Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**", inline=False)
-    embed.add_field(name="🌍 Сервер:", value=f"`{server}` *(уточніть в ПМ)*", inline=False)
-    embed.add_field(name="⏱ Старт:", value=f"<t:{int(st.timestamp())}:t>, після босів **LoML**", inline=False)
-    embed.add_field(name="🛣 Шлях:", value="Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*", inline=False)
-    embed.add_field(name="🐉 Боси:", value="3 рівня", inline=False)
-    embed.add_field(name="⚠️ Примітка:", value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.", inline=False)
-    embed.add_field(name="🎫 Слотів:", value=f"`{slots}`", inline=True)
-    embed.add_field(name="🟩 Залишилось:", value=f"`{slots}`", inline=True)
+    embed.add_field(name="📌 Шепотіть:", value=f"**{whisper}**", inline=False)
+    embed.add_field(name="⏰ Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**", inline=False)
+    embed.add_field(name="🏝️ Сервер:", value=f"`{server}` *(уточніть в ПМ)*", inline=False)
+    embed.add_field(name="⏰ Старт:", value=f"<t:{int(st.timestamp())}:t>, після босів **LoML**", inline=False)
+    embed.add_field(name="🛤️ Шлях:", value="Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*", inline=False)
+    embed.add_field(name="🐙 Боси:", value="3 рівня", inline=False)
+    embed.add_field(name="📌 Примітка:", value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.", inline=False)
+    embed.add_field(name="🧾 Слотів:", value=f"`{slots}`", inline=True)
+    embed.add_field(name="✅ Залишилось:", value=f"`{slots}`", inline=True)
+    embed.set_image(url="https://i.ibb.co/zZ3vxFq/boss.jpg")
     embed.set_footer(text="Silent Concierge | Найм активний")
 
     message = await ctx.send(embed=embed)
@@ -143,7 +144,7 @@ async def update_embed(closed=False):
     try:
         message = await channel.fetch_message(raid_data['message_id'])
         embed = message.embeds[0]
-        embed.set_field_at(8, name="🟩 Залишилось:", value=f"`{raid_data['slots'] - raid_data['taken']}`", inline=True)
+        embed.set_field_at(8, name="✅ Залишилось:", value=f"`{raid_data['slots'] - raid_data['taken']}`", inline=True)
         if closed:
             embed.color = discord.Color.dark_gray()
             embed.set_field_at(0, name="🔒 Найм завершено:", value="**Найм закрито. Всі місця зайнято.**", inline=False)
@@ -154,4 +155,5 @@ async def update_embed(closed=False):
 
 # --- Запуск ---
 bot.run(TOKEN)
+
 
