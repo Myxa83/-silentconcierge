@@ -11,6 +11,7 @@ import random
 
 # --- DEBUG: перевірка токена ---
 print("DEBUG TOKEN:", os.getenv("DISCORD_BOT_TOKEN"))
+print("DEBUG TOKEN:", TOKEN) 
 
 # --- Інтенції ---
 intents = discord.Intents.default()
