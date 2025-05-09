@@ -77,14 +77,15 @@ async def hello(ctx):
 
 # --- Команда !найм ---
 @bot.command()
-async def найм(ctx, date: str, time: str, server: str, whisper: str, slots: int):
+async def найм(ctx, date: str, time: str, start_time: str, server: str, whisper: str, slots: int):
     if ctx.author.id != OWNER_ID:
         return await ctx.send("❌ Тільки організатор може створити найм.")
 
     try:
         dt = datetime.strptime(f"{date} {time}", "%d.%m.%Y %H:%M")
+        st = datetime.strptime(f"{date} {start_time}", "%d.%m.%Y %H:%M")
     except ValueError:
-        return await ctx.send("❌ Формат: !найм 06.05.2025 18:00 Kamasylvia5 @MUSHA 15")
+        return await ctx.send("❌ Формат: !найм 06.05.2025 18:00 18:10 Kamasylvia5 @MUSHA 15")
 
     raid_data['slots'] = slots
     raid_data['taken'] = 0
@@ -97,9 +98,9 @@ async def найм(ctx, date: str, time: str, server: str, whisper: str, slots: 
         color=discord.Color.teal()
     )
     embed.add_field(name="🔴 Шепотіть:", value=f"**{whisper}**", inline=False)
-    embed.add_field(name="🧭 Найм:", value=f"`{time}` *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**", inline=False)
+   embed.add_field(name="🧭 Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**", inline=False)
     embed.add_field(name="🌍 Сервер:", value=f"`{server}` *(уточніть в ПМ)*", inline=False)
-    embed.add_field(name="⏱ Старт:", value="`18:10`, після босів **LoML**", inline=False)
+    embed.add_field(name="⏱ Старт:", value=f"<t:{int(st.timestamp())}:t>, після босів **LoML**", inline=False)
     embed.add_field(name="🛣 Шлях:", value="Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*", inline=False)
     embed.add_field(name="🐉 Боси:", value="3 рівня", inline=False)
     embed.add_field(name="⚠️ Примітка:", value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.", inline=False)
@@ -148,8 +149,3 @@ async def update_embed(closed=False):
             embed.set_field_at(0, name="🔒 Найм завершено:", value="**Найм закрито. Всі місця зайнято.**", inline=False)
             embed.set_footer(text="Silent Concierge | Найм завершено")
         await message.edit(embed=embed)
-    except:
-        pass
-
-# --- Запуск ---
-bot.run(TOKEN)
