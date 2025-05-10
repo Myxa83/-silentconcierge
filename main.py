@@ -187,4 +187,15 @@ async def close_raid(ctx):
     await message.edit(embed=embed)
     await ctx.send("🔒 Найм закрито.")
 
+# --- Команда !скинути ---
+@bot.command(name="скинути")
+async def reset_raid_data(ctx):
+    raid_data['slots'] = 0
+    raid_data['taken'] = 0
+    raid_data['is_closed'] = False
+    raid_data['channel_id'] = None
+    raid_data['message_id'] = None
+
+    await ctx.send("🔄 Дані найму скинуто. Тепер ви можете створити новий найм.")
+
 bot.run(TOKEN)
