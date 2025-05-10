@@ -5,6 +5,8 @@ import discord
 from discord import Embed
 from discord.ext import commands
 import random
+import datetime
+import pytz
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -80,7 +82,23 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
     if msg:
         raid_data['channel_id'] = channel.id
         raid_data['message_id'] = msg.id
+        
+    # --- автоматичне закриття о 17:59 за Лондоном ---
+    async def auto_close():
+        while not raid_data['is_closed']:
+            await asyncio.sleep(30)
+            current_time = datetime.datetime.now(pytz.timezone("Europe/London"))
+            if current_time.hour == 17 and current_time.minute == 59:
+                raid_data['is_closed'] = True
+                embed.color = 0xff3333
+                embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
+                embed.set_footer(text="Silent Concierge | Найм завершено")
+                embed.description += "\n\n🔴 **НАЙМ ЗАКРИТО — ЧАС ЗАВЕРШЕННЯ**"
+                await msg.edit(embed=embed)
+                break
 
+    import asyncio
+    bot.loop.create_task(auto_close())
 # --- 5. Команда !add ---
 @bot.command(name="add")
 async def add_slot(ctx, count: int = 1):
