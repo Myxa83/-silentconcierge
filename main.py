@@ -61,7 +61,7 @@ async def on_member_join(member):
         if member.avatar:
             embed.set_thumbnail(url=member.avatar.url)
 
-        embed.set_image(url="https://i.ibb.co/zZ3vxFq/boss.jpg")
+        embed.set_image(url="https://raw.githubusercontent.com/openai-examples/image-hosting/main/silentcove_boss.jpg")
         embed.set_footer(text="Silent Cove")
 
         await channel.send(embed=embed)
@@ -70,6 +70,22 @@ async def on_member_join(member):
 @bot.command()
 async def debug(ctx):
     await ctx.send("✅ Бот активний і працює.")
+
+# --- Команда !help ---
+@bot.command()
+async def help(ctx):
+    embed = discord.Embed(
+        title="📜 Доступні команди",
+        description="Ось список команд, які можна використовувати:",
+        color=discord.Color.blue()
+    )
+    embed.add_field(name="!найм <дата> <час найму> <час старту> <сервер> <нік> <кількість>:", value="Створює повідомлення про найм.", inline=False)
+    embed.add_field(name="!add [кількість]:", value="Додає вказану кількість учасників до найму (за замовчуванням 1).", inline=False)
+    embed.add_field(name="!remove:", value="Видаляє одного учасника з найму.", inline=False)
+    embed.add_field(name="!закрити:", value="Закриває найм і змінює статус повідомлення.", inline=False)
+    embed.add_field(name="!debug:", value="Перевіряє, чи активний бот.", inline=False)
+    embed.add_field(name="!hello:", value="Бот привітає вас у відповідь.", inline=False)
+    await ctx.send(embed=embed)
 
 # --- Команда !hello ---
 @bot.command()
@@ -100,10 +116,10 @@ async def найм(ctx, date: str, time: str, start_time: str, server: str, whis
         color=discord.Color.teal()
     )
     embed.add_field(name="📌 Шепотіть:", value=f"```diff\n- {whisper}\n```", inline=False)
-    embed.add_field(name="⏰ Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**", inline=True)
-    embed.add_field(name="🏝️ Сервер:", value=f"`{server}` *(уточніть в ПМ)*", inline=True)
+    embed.add_field(name="⏰ Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*", inline=True)
+    embed.add_field(name="🏝️ Сервер:", value=f"`{server}`", inline=True)
     embed.add_field(name="⏰ Старт:", value=f"<t:{int(st.timestamp())}:t>, після босів **LoML**", inline=True)
-    embed.add_field(name="🛤️ Шлях:", value="Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*", inline=False)
+    embed.add_field(name="🛤️ Шлях:", value="Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*", inline=True)
     embed.add_field(name="🐙 Боси:", value="3 рівня", inline=True)
     embed.add_field(name="📌 Примітка:", value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.", inline=False)
     embed.add_field(name="🧾 Слотів:", value=f"`{slots}`", inline=True)
@@ -114,14 +130,16 @@ async def найм(ctx, date: str, time: str, start_time: str, server: str, whis
     message = await ctx.send(embed=embed)
     raid_data['message_id'] = message.id
 
-# --- Додавання учасника ---
+# --- Додавання учасників з кількістю ---
 @bot.command()
-async def add(ctx):
+async def add(ctx, count: int = 1):
     if ctx.author.id != OWNER_ID or raid_data['is_closed']:
         return
-    if raid_data['taken'] < raid_data['slots']:
-        raid_data['taken'] += 1
+    if raid_data['taken'] + count <= raid_data['slots']:
+        raid_data['taken'] += count
         await update_embed()
+    else:
+        await ctx.send("❌ Недостатньо вільних місць!")
 
 # --- Видалення учасника ---
 @bot.command()
@@ -146,7 +164,7 @@ async def update_embed(closed=False):
     try:
         message = await channel.fetch_message(raid_data['message_id'])
         embed = message.embeds[0]
-        embed.set_field_at(8, name="✅ Залишилось:", value=f"`{raid_data['slots'] - raid_data['taken']}`", inline=True)
+        embed.set_field_at(9, name="✅ Залишилось:", value=f"`{raid_data['slots'] - raid_data['taken']}`", inline=True)
         if closed:
             embed.color = discord.Color.dark_gray()
             embed.set_field_at(0, name="🔒 Найм завершено:", value="**Найм закрито. Всі місця зайнято.**", inline=False)
