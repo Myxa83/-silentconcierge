@@ -52,7 +52,6 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
             f"🎫 **Слотів:** {slots}    ✅ **Залишилось:** {slots}"
         ),
         color=0x00ffcc
-    )
     embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
     embed.set_footer(text="Silent Concierge | Найм активний")
 
