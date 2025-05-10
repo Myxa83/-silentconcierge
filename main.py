@@ -106,15 +106,49 @@ async def add_slot(ctx, count: int = 1):
 
     raid_data['taken'] += count
 
-    # оновлення повідомлення
     channel = bot.get_channel(raid_data['channel_id'])
     message = await channel.fetch_message(raid_data['message_id'])
 
     embed = message.embeds[0]
-    embed.set_field_at(index=6, name="🧮 Залишилось:", value=str(raid_data['slots'] - raid_data['taken']), inline=True)
+    # Витягаємо старий description:
+    lines = embed.description.split('\n')
+
+    # Замінимо рядок про слоти (рядок, що починається з "🧮"):
+    for i, line in enumerate(lines):
+        if line.startswith("🧮"):
+            lines[i] = f"🧮 **Слотів залишилось:** {raid_data['slots'] - raid_data['taken']}"
+            break
+
+    # Оновлений description:
+    embed.description = '\n'.join(lines)
     await message.edit(embed=embed)
 
     await ctx.send(f"✅ Додано {count} учасника(ів) до найму.")
+    
+    # --- Команда !remove ---
+@bot.command(name="remove")
+async def remove_slot(ctx, count: int = 1):
+    if raid_data['taken'] == 0:
+        await ctx.send("⚠️ У наймі ще немає учасників.")
+        return
+
+    raid_data['taken'] = max(0, raid_data['taken'] - count)
+
+    channel = bot.get_channel(raid_data['channel_id'])
+    message = await channel.fetch_message(raid_data['message_id'])
+
+    embed = message.embeds[0]
+    lines = embed.description.split('\n')
+
+    for i, line in enumerate(lines):
+        if line.startswith("🧮"):
+            lines[i] = f"🧮 **Слотів залишилось:** {raid_data['slots'] - raid_data['taken']}"
+            break
+
+    embed.description = '\n'.join(lines)
+    await message.edit(embed=embed)
+
+    await ctx.send(f"↩️ Видалено {count} учасника(ів) з найму.")
 # --- Команда !найм ---
 @bot.command(name="найм")
 async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots: int):
@@ -127,58 +161,20 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
     raid_data['is_closed'] = False
 
     embed = Embed(
-        title="# Гільдійні боси з SilentCove",
-        description=f"### {date}",
+        title="✨ Гільдійні боси з SilentCove",
+        description=(
+            f"📅 **Дата:** {date}\n"
+            f"📌 **Шепотіть:** `{nickname}`\n"
+            f"⏰ **Найм:** {recruit_time} *(можу бути афк)*\n"
+            f"🎁 **Винагорода:** буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду**.\n"
+            f"🌍 **Сервер:** `{server}` *(уточніть в ПМ)*\n"
+            f"🚀 **Старт:** {start_time}, після босів **LoML**\n"
+            f"🛤️ **Шлях:** Хан ➔ Бруд ➔ Феррід ➔ CTG на Футурума *(між босами 3–4 хв)*\n"
+            f"🐙 **Боси:** 3 рівня\n"
+            f"🧮 **Слотів залишилось:** {slots}\n"
+            f"📎 **Примітка:** Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу."
+        ),
         color=0x00ffcc
-    )
-
-    embed.add_field(
-        name="📌 Шепотіть:",
-        value=f"```diff\n{nickname}```",
-        inline=True
-    )
-
-    embed.add_field(
-        name="⏰ Найм:",
-        value=f"{recruit_time} *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**",
-        inline=True
-    )
-
-    embed.add_field(
-        name="🏝️ Сервер:",
-        value=f"`{server}` *(уточніть в ПМ)*",
-        inline=True
-    )
-
-    embed.add_field(
-        name="⏰ Старт:",
-        value=f"{start_time}, після босів **LoML**",
-        inline=True
-    )
-
-    embed.add_field(
-        name="🛤️ Шлях:",
-        value="Хан ➔ Бруд ➔ Феррід ➔ CTG на Футурума *(між босами 3–4 хв)*",
-        inline=True
-    )
-
-    embed.add_field(
-        name="🐙 Боси:",
-        value="3 рівня",
-        inline=True
-    )
-
-    embed.add_field(
-        name="🧮 Залишилось:",
-        value=str(slots),
-        inline=True
-    )
-
-    embed.add_field(
-        name="📌 Примітка:",
-        value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.",
-        inline=False
-    )
 
     embed.set_footer(text="Silent Concierge | Найм активний")
     embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")  # 🔺 Заміни за потреби
@@ -204,27 +200,5 @@ async def close_raid(ctx):
     embed.set_footer(text="Silent Concierge | Найм завершено")
     await message.edit(embed=embed)
     await ctx.send("🔒 Найм закрито.")
-    # --- Команда !наймтекст ---
-@bot.command(name="наймтекст")
-async def simple_raid_post(ctx, date, recruit_time, start_time, server, nickname, slots: int):
-    if not ctx.author.guild_permissions.administrator:
-        await ctx.send("⛔ У вас немає прав для цієї команди.")
-        return
-
-    text = f"""```md
-# Найм : {recruit_time} (можу бути афк)
-Винагорода буде роздаватись одразу, тому почекайте 5 хвилин після того, як зайшли в найм і чекніть наявність винагороди.
-Сервер: {server} (а краще уточніть в ПМ)
-Старт: {start_time}, після босів LOML
-Шлях: Хан >> Бруд >> Феррід >> CTG на Футурума >> між босами 3-4 хв
-Боси 3 левелу
-Якщо ви забукіровали місце в альянсі, можете заходити, але не протискайте прийняття до відведеного часу
-Слотів: {slots}
-Шепотіть: {nickname}
-Дата: {date}
-```"""
-
-    await ctx.send(text)
-
 # --- Запуск бота ---
 bot.run(TOKEN)
