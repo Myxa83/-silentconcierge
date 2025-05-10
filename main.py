@@ -171,13 +171,14 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
             f"🚀 **Старт:** {start_time}, після босів **LoML**\n"
             f"🛤️ **Шлях:** Хан ➔ Бруд ➔ Феррід ➔ CTG на Футурума *(між босами 3–4 хв)*\n"
             f"🐙 **Боси:** 3 рівня\n"
-            f"🧮 **Слотів залишилось:** {slots}\n"
+            f"🧮 **Слотів залишилось:** {raid_data['slots'] - raid_data['taken']}\n"
             f"📎 **Примітка:** Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу."
         ),
         color=0x00ffcc
+    )
 
     embed.set_footer(text="Silent Concierge | Найм активний")
-    embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")  # 🔺 Заміни за потреби
+    embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
 
     msg = await ctx.send(embed=embed)
     raid_data['channel_id'] = ctx.channel.id
