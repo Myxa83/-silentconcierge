@@ -40,15 +40,15 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
     embed = Embed(
         title="✨ Гільдійні боси з SilentCove",
         description=(
-            f"📅 **Дата:** {date}\\n\\n"
-            f"🔴 **Шепотіть:** ```ansi\\n\\u001b[0;31m{nickname}\\u001b[0m```\\n\\n"
-            f"🧭 **Найм:** {recruit_time} *(можу бути афк)*\\n\\n"
-            f"🎁 **Винагорода:** буде роздаватись одразу, тому почекайте 5 хвилин після заходу й чекніть нагороду.\\n\\n"
-            f"🌍 **Сервер:** `{server}` *(уточніть в ПМ)*\\n\\n"
-            f"⏱ **Старт:** {start_time}, після босів LoML\\n\\n"
-            f"🛤 **Шлях:** Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*\\n\\n"
-            f"🐉 **Боси:** 3 рівня\\n\\n"
-            f"⚠️ **Примітка:** Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.\\n\\n"
+            f"📅 **Дата:** {date}\n\n"
+            f"🔴 **Шепотіть:** `{nickname}`\n\n"
+            f"🧭 **Найм:** {recruit_time} *(можу бути афк)*\n\n"
+            f"🎁 **Винагорода:** буде роздаватись одразу, тому почекайте 5 хвилин після заходу й чекніть нагороду.\n\n"
+            f"🌍 **Сервер:** `{server}` *(уточніть в ПМ)*\n\n"
+            f"⏱ **Старт:** {start_time}, після босів LoML\n\n"
+            f"🛤 **Шлях:** Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*\n\n"
+            f"🐉 **Боси:** 3 рівня\n\n"
+            f"⚠️ **Примітка:** Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.\n\n"
             f"🎫 **Слотів:** {slots}    ✅ **Залишилось:** {slots}"
         ),
         color=0x00ffcc
@@ -79,12 +79,12 @@ async def add_slot(ctx, count: int = 1):
         return
 
     embed = message.embeds[0]
-    lines = embed.description.split('\\n')
+    lines = embed.description.split('\n')
     for i, line in enumerate(lines):
         if line.startswith("🎫"):
             lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {raid_data['slots'] - raid_data['taken']}"
             break
-    embed.description = '\\n'.join(lines)
+    embed.description = '\n'.join(lines)
     await message.edit(embed=embed)
 
     await ctx.send(f"✅ Додано {count} учасника(ів) до найму.")
@@ -104,12 +104,12 @@ async def remove_slot(ctx, count: int = 1):
         return
 
     embed = message.embeds[0]
-    lines = embed.description.split('\\n')
+    lines = embed.description.split('\n')
     for i, line in enumerate(lines):
         if line.startswith("🎫"):
             lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {raid_data['slots'] - raid_data['taken']}"
             break
-    embed.description = '\\n'.join(lines)
+    embed.description = '\n'.join(lines)
     await message.edit(embed=embed)
 
     await ctx.send(f"↩️ Видалено {count} учасника(ів) з найму.")
@@ -129,8 +129,13 @@ async def close_raid(ctx):
         return
 
     embed = message.embeds[0]
-    embed.color = 0x777777
-    embed.set_footer(text="Silent Concierge | Найм завершено")
+    embed.color = 0xff3333  # Червоний
+    embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
+    embed.set_footer(text="Silent Concierge")
+
+    if "🔴 НАЙМ ЗАКРИТО" not in embed.description:
+        embed.description += "\n\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
+
     await message.edit(embed=embed)
     await ctx.send("🔒 Найм закрито.")
 
