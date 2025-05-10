@@ -24,6 +24,24 @@ raid_data = {
     'message_id': None
 }
 
+# --- 4. Привітання нового учасника ---
+@bot.event
+async def on_member_join(member):
+    channel = bot.get_channel(1324854638276509828)  # Заміни ID на свій
+    if channel:
+        embed = Embed(
+            title="👋 Ласкаво просимо!",
+            description=f"🎶 Пані та панове, зустрічайте – {member.mention}! 👏",
+            color=0x00ffcc
+        )
+
+        if member.avatar:
+            embed.set_thumbnail(url=member.avatar.url)
+
+        embed.set_footer(text="Silent Concierge")
+
+        await channel.send(embed=embed)
+
 # --- 4. Команда !найм ---
 @bot.command(name="найм")
 async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots: int, channel_name: str):
