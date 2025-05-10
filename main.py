@@ -47,21 +47,22 @@ async def on_member_join(member):
             "💀 КОД ЧОРНОГО ВІТРІЛА АКТИВОВАНО! {mention} на палубі!",
             "⚠️ КРИТИЧНИЙ ВИБУХ КРУТОСТІ! {mention} активував ульту!",
             "📣 Докладаю! {mention} залетів на базу з двох ніг!",
-            "🌌 Всесвіт почув молитви – {mention} тут! 🤓"
+            "🌌 Всесвіт почув молитви – {mention} тут! 🧓"
         ]
 
         msg_text = random.choice(welcome_messages).format(mention=member.mention)
 
         embed = Embed(
-            title="👋 Ласкаво просимо!",
-            description=msg_text,
+            title="# 👋 Ласкаво просимо!",
+            description="### " + msg_text,
             color=0x00ffcc
         )
 
         if member.avatar:
             embed.set_thumbnail(url=member.avatar.url)
 
-        embed.set_image(url="https://i.ibb.co/zZ3vxFq/boss.jpg")
+        embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
+        embed.add_field(name="🕵️‍♂️ Шепотіть:", value="```diff\nFalgestar```", inline=True)
         embed.set_footer(text="Silent Cove")
 
         await channel.send(embed=embed)
@@ -75,16 +76,16 @@ async def debug(ctx):
 @bot.command(name="довідка")
 async def help_command(ctx):
     embed = discord.Embed(
-        title="📜 Доступні команди",
-        description="Ось список команд, які можна використовувати:",
+        title="# 📜 Доступні команди",
+        description="### Ось список команд, які можна використовувати:",
         color=discord.Color.blue()
     )
-    embed.add_field(name="!найм <дата> <час найму> <час старту> <сервер> <нік> <кількість>:", value="Створює повідомлення про найм.", inline=False)
-    embed.add_field(name="!add [кількість]:", value="Додає вказану кількість учасників до найму (за замовчуванням 1).", inline=False)
-    embed.add_field(name="!remove:", value="Видаляє одного учасника з найму.", inline=False)
-    embed.add_field(name="!закрити:", value="Закриває найм і змінює статус повідомлення.", inline=False)
-    embed.add_field(name="!debug:", value="Перевіряє, чи активний бот.", inline=False)
-    embed.add_field(name="!hello:", value="Бот привітає вас у відповідь.", inline=False)
+    embed.add_field(name="!найм <дата> <час найму> <час старту> <сервер> <нік> <кількість>:", value="### Створює повідомлення про найм.", inline=False)
+    embed.add_field(name="!add [кількість]:", value="### Додає вказану кількість учасників до найму (за замовчуванням 1).", inline=False)
+    embed.add_field(name="!remove:", value="### Видаляє одного учасника з найму.", inline=False)
+    embed.add_field(name="!закрити:", value="### Закриває найм і змінює статус повідомлення.", inline=False)
+    embed.add_field(name="!debug:", value="### Перевіряє, чи активний бот.", inline=False)
+    embed.add_field(name="!hello:", value="### Бот привітає вас у відповідь.", inline=False)
     await ctx.send(embed=embed)
 
 # --- Команда !hello ---
@@ -92,89 +93,28 @@ async def help_command(ctx):
 async def hello(ctx):
     await ctx.send(f"Привіт, {ctx.author.name}! Я тут, як завжди")
 
-# --- Команда !найм ---
-@bot.command()
-async def найм(ctx, date: str, time: str, start_time: str, server: str, whisper: str, slots: int):
-    if ctx.author.id != OWNER_ID:
-        return await ctx.send("❌ Тільки організатор може створити найм.")
-
-    try:
-        tz = pytz.timezone("Europe/London")
-        dt = tz.localize(datetime.strptime(f"{date} {time}", "%d.%m.%Y %H:%M"))
-        st = tz.localize(datetime.strptime(f"{date} {start_time}", "%d.%m.%Y %H:%M"))
-    except ValueError:
-        return await ctx.send("❌ Формат: !найм 06.05.2025 18:00 18:10 Kamasylvia5 Myxa 15")
-
-    raid_data['slots'] = slots
-    raid_data['taken'] = 0
-    raid_data['is_closed'] = False
-    raid_data['channel_id'] = ctx.channel.id
-
-    embed = discord.Embed(
-        title="**# Гільдійні боси з SilentCove**",
-        description=f"### {date}",
-        color=discord.Color.teal()
-    )
-    embed.add_field(name="📌 Шепотіть:", value=f"```diff\n- {whisper}\n```", inline=False)
-    embed.add_field(name="⏰ Найм:", value=f"<t:{int(dt.timestamp())}:t> *(можу бути афк)*", inline=True)
-    embed.add_field(name="🏝️ Сервер:", value=f"`{server}`", inline=True)
-    embed.add_field(name="⏰ Старт:", value=f"<t:{int(st.timestamp())}:t>, після босів **LoML**", inline=True)
-    embed.add_field(name="🛤️ Шлях:", value="Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*", inline=True)
-    embed.add_field(name="🐙 Боси:", value="3 рівня", inline=True)
-    embed.add_field(name="📌 Примітка:", value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.", inline=False)
-    embed.add_field(name="🧾 Слотів:", value=f"`{slots}`", inline=True)
-    embed.add_field(name="✅ Залишилось:", value=f"`{slots}`", inline=True)
-    embed.set_image(url="https://i.ibb.co/zZ3vxFq/boss.jpg")
-    embed.set_footer(text="Silent Concierge | Найм активний")
-
-    message = await ctx.send(embed=embed)
-    raid_data['message_id'] = message.id
-
-# --- Додавання учасників з кількістю ---
-@bot.command()
-async def add(ctx, count: int = 1):
-    if ctx.author.id != OWNER_ID or raid_data['is_closed']:
+# --- Команда !add ---
+@bot.command(name="add")
+async def add_slot(ctx, count: int = 1):
+    if raid_data['is_closed']:
+        await ctx.send("❌ Найм вже закрито.")
         return
-    if raid_data['taken'] + count <= raid_data['slots']:
-        raid_data['taken'] += count
-        await update_embed()
-    else:
-        await ctx.send("❌ Недостатньо вільних місць!")
 
-# --- Видалення учасника ---
-@bot.command()
-async def remove(ctx):
-    if ctx.author.id != OWNER_ID or raid_data['is_closed']:
+    if raid_data['taken'] + count > raid_data['slots']:
+        await ctx.send("❌ Недостатньо вільних місць.")
         return
-    if raid_data['taken'] > 0:
-        raid_data['taken'] -= 1
-        await update_embed()
 
-# --- Закриття найму ---
-@bot.command()
-async def закрити(ctx):
-    if ctx.author.id != OWNER_ID:
-        return
-    raid_data['is_closed'] = True
-    await update_embed(closed=True)
+    raid_data['taken'] += count
 
-# --- Оновлення ембеду ---
-async def update_embed(closed=False):
+    # оновлення повідомлення
     channel = bot.get_channel(raid_data['channel_id'])
-    try:
-        message = await channel.fetch_message(raid_data['message_id'])
-        embed = message.embeds[0]
-        embed.set_field_at(9, name="✅ Залишилось:", value=f"`{raid_data['slots'] - raid_data['taken']}`", inline=True)
-        if closed:
-            embed.color = discord.Color.dark_gray()
-            embed.set_field_at(0, name="🔒 Найм завершено:", value="**Найм закрито. Всі місця зайнято.**", inline=False)
-            embed.set_footer(text="Silent Concierge | Найм завершено")
-        await message.edit(embed=embed)
-    except:
-        pass
+    message = await channel.fetch_message(raid_data['message_id'])
 
-# --- Запуск ---
-bot.run(TOKEN)
+    embed = message.embeds[0]
+    embed.set_field_at(index=6, name="🧮 Залишилось:", value=str(raid_data['slots'] - raid_data['taken']), inline=True)
+    await message.edit(embed=embed)
+
+    await ctx.send(f"✅ Додано {count} учасника(ів) до найму.")
 
 
 
