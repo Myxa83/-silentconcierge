@@ -135,7 +135,7 @@ async def remove_slot(ctx, count: int = 1):
     await ctx.send(f"↩️ Видалено {count} учасника(ів) з найму.")
 
 @bot.command(name="найм")
-async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots: int):
+async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots: int, channel: discord.TextChannel):
     if not ctx.author.guild_permissions.administrator:
         await ctx.send("⛔ У вас немає прав для цієї команди.")
         return
@@ -150,23 +150,21 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
             f"📅 **Дата:** {date}\n"
             f"🔴 **Шепотіть:** ```ansi\n\u001b[0;31m{nickname}\u001b[0m```\n"
             f"🧭 **Найм:** {recruit_time} *(можу бути афк)*\n"
-            f"🎁 **Винагорода:** буде роздаватись одразу, тому почекайте 5 хвилин після заходу й чекніть нагороду.\n"
+            f"🎁 **Винагорода:** буде роздаватись одразу...\n"
             f"🌍 **Сервер:** `{server}` *(уточніть в ПМ)*\n"
             f"⏱ **Старт:** {start_time}, після босів LoML\n"
             f"🛤 **Шлях:** Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*\n"
             f"🐉 **Боси:** 3 рівня\n"
             f"⚠️ **Примітка:** Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.\n"
-            f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {raid_data['slots'] - raid_data['taken']}"
+            f"🎫 **Слотів:** {slots}    ✅ **Залишилось:** {slots}"
         ),
         color=0x00ffcc
     )
     embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
     embed.set_footer(text="Silent Concierge | Найм активний")
 
-    channel = bot.get_channel(1324986848866599004)
     msg = await channel.send(embed=embed)
-    raid_data['channel_id'] = 1324986848866599004
-    raid_data['message_id'] = msg.id
+    raid_data['channel_id'] = channel.id
 
 @bot.command(name="закрити")
 async def close_raid(ctx):
