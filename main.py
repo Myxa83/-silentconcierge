@@ -61,7 +61,7 @@ async def on_member_join(member):
         if member.avatar:
             embed.set_thumbnail(url=member.avatar.url)
 
-        embed.set_image(url="https://raw.githubusercontent.com/openai-examples/image-hosting/main/silentcove_boss.jpg")
+        embed.set_image(url="https://i.ibb.co/zZ3vxFq/boss.jpg")
         embed.set_footer(text="Silent Cove")
 
         await channel.send(embed=embed)
@@ -71,9 +71,9 @@ async def on_member_join(member):
 async def debug(ctx):
     await ctx.send("✅ Бот активний і працює.")
 
-# --- Команда !help ---
-@bot.command()
-async def help(ctx):
+# --- Команда !довідка ---
+@bot.command(name="довідка")
+async def help_command(ctx):
     embed = discord.Embed(
         title="📜 Доступні команди",
         description="Ось список команд, які можна використовувати:",
