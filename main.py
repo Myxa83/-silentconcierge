@@ -50,31 +50,28 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
         await ctx.send("⛔ У вас немає ролі 'Менеджмент' або прав адміністратора.")
         return
 
-    raid_data['slots'] = slots
-    raid_data['taken'] = 0
-    raid_data['is_closed'] = False
+     import datetime, pytz
+    now = datetime.datetime.now(pytz.timezone("Europe/London"))
+    recruit_timestamp = int(now.timestamp())
+    start_timestamp = int((now + datetime.timedelta(hours=1)).timestamp())
 
-    channel = discord.utils.get(ctx.guild.text_channels, name=channel_name)
-    if not channel:
-        await ctx.send(f"❌ Канал з назвою '{channel_name}' не знайдено.")
-        return
-
-    remaining = raid_data['slots'] - raid_data['taken']
+    remaining = slots
 
     embed = discord.Embed(
         title="✨ # **Гільдійні боси з SilentCove**",
         description=(
             f"📅 **Дата: {date}**\n\n"
-            f"📌 **Шепотіть:\n```ansi\n\u001b[0;31m{nickname}\u001b[0m\n```**\n\n"
-            f"⏰ **Найм: {recruit_time} *(можу бути афк)* Винагорода буде роздаватись одразу, тому почекайте 5 хвилин після заходу й чекніть нагороду.**\n\n"
+            f"📌 **Шепотіть:**\n```ansi\n\u001b[0;31m{nickname}\u001b[0m\n```\n\n"
+            f"⏰ **Найм:** <t:{recruit_timestamp}:t> *(можу бути афк)* Винагорода буде роздаватись одразу, тому почекайте 5 хвилин після заходу й чекніть нагороду.**\n\n"
             f"🏝️ **Сервер: {server} *(уточніть в ПМ)* **\n\n"
-            f"⏰ **Старт: {start_time}, після босів LoML**\n\n"
+            f"⏰ **Старт:** <t:{start_timestamp}:t>, після босів LoML**\n\n"
             f"🛤️ **Шлях: Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)* **\n\n"
             f"🐙 **Боси: 3 рівня**\n\n"
             f"📌 **Примітка: Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.**\n\n"
             f"🧾 **Слотів:** {slots}    ✅ **Залишилось:** {remaining}"
+        ),
+        color=0x00ffcc
     )
-)
 
     embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
     embed.set_footer(text="Silent Concierge | Найм активний")
