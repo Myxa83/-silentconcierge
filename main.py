@@ -40,15 +40,15 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
     embed = Embed(
         title="✨ Гільдійні боси з SilentCove",
         description=(
-            f"📅 **Дата:** {date}\n\n"
-            f"🔴 **Шепотіть:**\n```diff\n- {nickname}\n```\n\n"
-            f"🧭 **Найм:** {recruit_time} *(можу бути афк)*\n\n"
-            f"🎁 **Винагорода:** буде роздаватись одразу, тому почекайте 5 хвилин після заходу й чекніть нагороду.\n\n"
-            f"🌍 **Сервер:** `{server}` *(уточніть в ПМ)*\n\n"
-            f"⏱ **Старт:** {start_time}, після босів LoML\n\n"
-            f"🛤 **Шлях:** Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*\n\n"
-            f"🐉 **Боси:** 3 рівня\n\n"
-            f"⚠️ **Примітка:** Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.\n\n"
+            f"📅 **Дата:** {date}\\n\\n"
+            f"🔴 **Шепотіть:**\\n```diff\\n- {nickname}\\n```\\n\\n"
+            f"🧭 **Найм:** {recruit_time} *(можу бути афк)*\\n\\n"
+            f"🎁 **Винагорода:** буде роздаватись одразу, тому почекайте 5 хвилин після заходу й чекніть нагороду.\\n\\n"
+            f"🌍 **Сервер:** `{server}` *(уточніть в ПМ)*\\n\\n"
+            f"⏱ **Старт:** {start_time}, після босів LoML\\n\\n"
+            f"🛤 **Шлях:** Хан → Бруд → Феррід → CTG на Футурума *(між босами 3–4 хв)*\\n\\n"
+            f"🐉 **Боси:** 3 рівня\\n\\n"
+            f"⚠️ **Примітка:** Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.\\n\\n"
             f"🎫 **Слотів:** {slots}    ✅ **Залишилось:** {slots}"
         ),
         color=0x00ffcc
@@ -79,15 +79,25 @@ async def add_slot(ctx, count: int = 1):
         return
 
     embed = message.embeds[0]
-    lines = embed.description.split('\n')
+    lines = embed.description.split('\\n')
     for i, line in enumerate(lines):
         if line.startswith("🎫"):
             lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {raid_data['slots'] - raid_data['taken']}"
             break
-    embed.description = '\n'.join(lines)
+    embed.description = '\\n'.join(lines)
     await message.edit(embed=embed)
 
     await ctx.send(f"✅ Додано {count} учасника(ів) до найму.")
+
+    if raid_data['taken'] >= raid_data['slots']:
+        embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
+        embed.color = 0xff3333
+        if "🔴 НАЙМ ЗАКРИТО" not in embed.description:
+            embed.description += "\\n\\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
+        embed.set_footer(text="Silent Concierge")
+        raid_data['is_closed'] = True
+        await message.edit(embed=embed)
+        await ctx.send("🔒 Найм автоматично закрито: усі місця зайняті.")
 
 @bot.command(name="remove")
 async def remove_slot(ctx, count: int = 1):
@@ -104,12 +114,12 @@ async def remove_slot(ctx, count: int = 1):
         return
 
     embed = message.embeds[0]
-    lines = embed.description.split('\n')
+    lines = embed.description.split('\\n')
     for i, line in enumerate(lines):
         if line.startswith("🎫"):
             lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {raid_data['slots'] - raid_data['taken']}"
             break
-    embed.description = '\n'.join(lines)
+    embed.description = '\\n'.join(lines)
     await message.edit(embed=embed)
 
     await ctx.send(f"↩️ Видалено {count} учасника(ів) з найму.")
@@ -129,12 +139,12 @@ async def close_raid(ctx):
         return
 
     embed = message.embeds[0]
-    embed.color = 0xff3333  # Червоний
+    embed.color = 0xff3333
     embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
     embed.set_footer(text="Silent Concierge")
 
     if "🔴 НАЙМ ЗАКРИТО" not in embed.description:
-        embed.description += "\n\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
+        embed.description += "\\n\\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
 
     await message.edit(embed=embed)
     await ctx.send("🔒 Найм закрито.")
@@ -147,5 +157,24 @@ async def reset_raid_data(ctx):
     raid_data['channel_id'] = None
     raid_data['message_id'] = None
     await ctx.send("🔄 Дані найму скинуто. Тепер ви можете створити новий найм.")
+
+@bot.command()
+async def debug(ctx):
+    await ctx.send("✅ Бот активний і працює.")
+
+@bot.command(name="довідка")
+async def help_command(ctx):
+    embed = discord.Embed(
+        title="📜 Доступні команди",
+        description="Ось список команд, які ви можете використовувати:",
+        color=discord.Color.blue()
+    )
+    embed.add_field(name="!найм <дата> <найм> <старт> <сервер> <нік> <кількість> <канал>", value="Створює найм у вказаному каналі.", inline=False)
+    embed.add_field(name="!add [кількість]", value="Додає учасників до найму (за замовчуванням 1).", inline=False)
+    embed.add_field(name="!remove [кількість]", value="Видаляє учасників з найму.", inline=False)
+    embed.add_field(name="!закрити", value="Закриває найм вручну.", inline=False)
+    embed.add_field(name="!скинути", value="Скидає всі дані про найм.", inline=False)
+    embed.add_field(name="!debug", value="Перевірка активності бота.", inline=False)
+    await ctx.send(embed=embed)
 
 bot.run(TOKEN)
