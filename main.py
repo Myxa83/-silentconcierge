@@ -150,13 +150,13 @@ async def remove_slot(ctx, count: int = 1):
     message = await channel.fetch_message(raid_data['message_id'])
     embed = message.embeds[0]
 
-    lines = embed.description.split('\n')
+    lines = embed.description.split("\n")
     for i, line in enumerate(lines):
-        if line.startswith("🎫"):
-            lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {remaining}"
+        if "🧾" in line:
+            lines[i] = f"🧾 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {remaining}"
             break
 
-    embed.description = '\n'.join(lines)
+    embed.description = "\n".join(lines)
     await message.edit(embed=embed)
     await ctx.send(f"↩️ Видалено {count} учасника(ів) з найму.")
 
