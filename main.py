@@ -55,9 +55,8 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
             f"🐙 **Боси: 3 рівня**\n\n"
             f"📌 **Примітка: Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.**\n\n"
             f"🧾 **Слотів:** {slots}    ✅ **Залишилось:** {remaining}"
-        ),    
-        color=0x00ffcc
     )
+
     embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
     embed.set_footer(text="Silent Concierge | Найм активний")
 
@@ -66,6 +65,7 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
         raid_data['channel_id'] = channel.id
         raid_data['message_id'] = msg.id
 
+# --- 5. Команда !add ---
 @bot.command(name="add")
 async def add_slot(ctx, count: int = 1):
     if raid_data['is_closed']:
@@ -76,37 +76,32 @@ async def add_slot(ctx, count: int = 1):
         return
 
     raid_data['taken'] += count
-    channel = bot.get_channel(raid_data['channel_id'])
-    if not channel:
-        await ctx.send("⚠️ Канал не знайдено.")
-        return
-    try:
-        message = await channel.fetch_message(raid_data['message_id'])
-    except discord.NotFound:
-        await ctx.send("❌ Неможливо оновити найм: повідомлення не знайдено.")
-        return
+    remaining = raid_data['slots'] - raid_data['taken']
 
+    channel = bot.get_channel(raid_data['channel_id'])
+    message = await channel.fetch_message(raid_data['message_id'])
     embed = message.embeds[0]
-    lines = embed.description.split('\\n')
+
+    lines = embed.description.split('\n')
     for i, line in enumerate(lines):
         if line.startswith("🎫"):
-            lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {raid_data['slots'] - raid_data['taken']}"
+            lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {remaining}"
             break
-    embed.description = '\\n'.join(lines)
-    await message.edit(embed=embed)
 
+    embed.description = '\n'.join(lines)
+    await message.edit(embed=embed)
     await ctx.send(f"✅ Додано {count} учасника(ів) до найму.")
 
     if raid_data['taken'] >= raid_data['slots']:
         embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
         embed.color = 0xff3333
-        if "🔴 НАЙМ ЗАКРИТО" not in embed.description:
-            embed.description += "\\n\\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
         embed.set_footer(text="Silent Concierge")
+        embed.description += "\n\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
         raid_data['is_closed'] = True
         await message.edit(embed=embed)
         await ctx.send("🔒 Найм автоматично закрито: усі місця зайняті.")
 
+# --- 6. Команда !remove ---
 @bot.command(name="remove")
 async def remove_slot(ctx, count: int = 1):
     if raid_data['taken'] == 0:
@@ -114,49 +109,37 @@ async def remove_slot(ctx, count: int = 1):
         return
 
     raid_data['taken'] = max(0, raid_data['taken'] - count)
-    channel = bot.get_channel(raid_data['channel_id'])
-    try:
-        message = await channel.fetch_message(raid_data['message_id'])
-    except discord.NotFound:
-        await ctx.send("❌ Неможливо оновити найм: повідомлення не знайдено.")
-        return
+    remaining = raid_data['slots'] - raid_data['taken']
 
+    channel = bot.get_channel(raid_data['channel_id'])
+    message = await channel.fetch_message(raid_data['message_id'])
     embed = message.embeds[0]
-    lines = embed.description.split('\\n')
+
+    lines = embed.description.split('\n')
     for i, line in enumerate(lines):
         if line.startswith("🎫"):
-            lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {raid_data['slots'] - raid_data['taken']}"
+            lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {remaining}"
             break
-    embed.description = '\\n'.join(lines)
-    await message.edit(embed=embed)
 
+    embed.description = '\n'.join(lines)
+    await message.edit(embed=embed)
     await ctx.send(f"↩️ Видалено {count} учасника(ів) з найму.")
 
+# --- 7. Команда !закрити ---
 @bot.command(name="закрити")
 async def close_raid(ctx):
-    if not ctx.author.guild_permissions.administrator:
-        await ctx.send("⛔ У вас немає прав для цієї команди.")
-        return
-
     raid_data['is_closed'] = True
     channel = bot.get_channel(raid_data['channel_id'])
-    try:
-        message = await channel.fetch_message(raid_data['message_id'])
-    except discord.NotFound:
-        await ctx.send("❌ Неможливо завершити найм: повідомлення не знайдено.")
-        return
-
+    message = await channel.fetch_message(raid_data['message_id'])
     embed = message.embeds[0]
-    embed.color = 0xff3333
     embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
+    embed.color = 0xff3333
     embed.set_footer(text="Silent Concierge")
-
-    if "🔴 НАЙМ ЗАКРИТО" not in embed.description:
-        embed.description += "\\n\\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
-
+    embed.description += "\n\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
     await message.edit(embed=embed)
-    await ctx.send("🔒 Найм закрито.")
+    await ctx.send("🔒 Найм вручну закрито.")
 
+# --- 8. Команда !скинути ---
 @bot.command(name="скинути")
 async def reset_raid_data(ctx):
     raid_data['slots'] = 0
@@ -166,10 +149,12 @@ async def reset_raid_data(ctx):
     raid_data['message_id'] = None
     await ctx.send("🔄 Дані найму скинуто. Тепер ви можете створити новий найм.")
 
+# --- 9. Команда !debug ---
 @bot.command()
 async def debug(ctx):
     await ctx.send("✅ Бот активний і працює.")
 
+# --- 10. Команда !довідка ---
 @bot.command(name="довідка")
 async def help_command(ctx):
     embed = discord.Embed(
@@ -185,4 +170,5 @@ async def help_command(ctx):
     embed.add_field(name="!debug", value="Перевірка активності бота.", inline=False)
     await ctx.send(embed=embed)
 
+# --- 11. Запуск бота ---
 bot.run(TOKEN)
