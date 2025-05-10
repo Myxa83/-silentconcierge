@@ -24,7 +24,7 @@ async def on_ready():
 
 async def main():
     async with bot:
-        await bot.load_extension("raid")  # назва твого cog-файлу (raid.py або raid_cog.py)
+        await bot.load_extension("raid.py")  # назва твого cog-файлу (raid.py або raid_cog.py)
         await bot.start(TOKEN)
 
 asyncio.run(main())
@@ -47,7 +47,7 @@ raid_data = {
 # --- 4. Привітання нового учасника ---
 @bot.event
 async def on_member_join(member):
-    channel = bot.get_channel(1324854638276509828)  # Заміни ID на свій
+    channel = bot.get_channel(279395551198445568)  # Заміни ID на свій
     if channel:
         embed = Embed(
             title="👋 Ласкаво просимо!",
