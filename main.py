@@ -149,7 +149,7 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
     embed = Embed(
         title="✨ Гільдійні боси з SilentCove",
         description=(
-            f"📅 **Дата:** {date}\\n"
+            f"📅 **Дата:** {date}\\n",
             embed.add_field(
     name="📌 Шепотіть:",
     value=f"""```ansi
