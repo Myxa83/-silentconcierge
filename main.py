@@ -104,6 +104,7 @@ async def add_slot(ctx, count: int = 1):
     if raid_data['is_closed']:
         await ctx.send("❌ Найм вже закрито.")
         return
+
     if raid_data['taken'] + count > raid_data['slots']:
         await ctx.send("❌ Недостатньо вільних місць.")
         return
@@ -115,24 +116,25 @@ async def add_slot(ctx, count: int = 1):
     message = await channel.fetch_message(raid_data['message_id'])
     embed = message.embeds[0]
 
-    lines = embed.description.split('\n')
+    lines = embed.description.split("\n")
     for i, line in enumerate(lines):
-        if line.startswith("🎫"):
-            lines[i] = f"🎫 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {remaining}"
+        if "🧾" in line:
+            lines[i] = f"🧾 **Слотів:** {raid_data['slots']}    ✅ **Залишилось:** {remaining}"
             break
 
-    embed.description = '\n'.join(lines)
+    embed.description = "\n".join(lines)
     await message.edit(embed=embed)
+
     await ctx.send(f"✅ Додано {count} учасника(ів) до найму.")
 
+    # авто-закриття якщо заповнено
     if raid_data['taken'] >= raid_data['slots']:
-        embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
         embed.color = 0xff3333
-        embed.set_footer(text="Silent Concierge")
+        embed.title = "🔒 **НАЙМ ЗАВЕРШЕНО**"
+        embed.set_footer(text="Silent Concierge | Найм завершено")
         embed.description += "\n\n🔴 **НАЙМ ЗАКРИТО — ВСІ МІСЦЯ ЗАЙНЯТО**"
         raid_data['is_closed'] = True
         await message.edit(embed=embed)
-        await ctx.send("🔒 Найм автоматично закрито: усі місця зайняті.")
 
 # --- 6. Команда !remove ---
 @bot.command(name="remove")
