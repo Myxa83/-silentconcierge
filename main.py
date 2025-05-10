@@ -74,6 +74,7 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
             f"📌 **Примітка: Якщо ви забукіровали місце в альянсі, не протискайте прийняття до відведеного часу.**\n\n"
             f"🧾 **Слотів:** {slots}    ✅ **Залишилось:** {remaining}"
     )
+)
 
     embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
     embed.set_footer(text="Silent Concierge | Найм активний")
