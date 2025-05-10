@@ -52,7 +52,7 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
         await ctx.send("⛔ У вас немає ролі 'Менеджмент' або прав адміністратора.")
         return
 
-     import datetime, pytz
+import datetime, pytz
     now = datetime.datetime.now(pytz.timezone("Europe/London"))
     recruit_timestamp = int(now.timestamp())
     start_timestamp = int((now + datetime.timedelta(hours=1)).timestamp())
