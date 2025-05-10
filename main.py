@@ -36,10 +36,9 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
     if not channel:
         await ctx.send(f"❌ Канал з назвою '{channel_name}' не знайдено.")
         return
-
- embed = discord.Embed(
-    title= "✨# **Гільдійні боси з SilentCove**",
-    description=(
+     embed = discord.Embed(
+        title= "✨# **Гільдійні боси з SilentCove**",
+        description=(
         f"📅 **Дата: {date}**\n\n"
         f"📌 **Шепотіть:\n"
         f"```diff\n{nickname}\n```**\n\n"
