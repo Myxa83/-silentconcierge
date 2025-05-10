@@ -115,98 +115,93 @@ async def add_slot(ctx, count: int = 1):
     await message.edit(embed=embed)
 
     await ctx.send(f"✅ Додано {count} учасника(ів) до найму.")
-    # --- Команда !найм ---
+# --- Команда !найм ---
 @bot.command(name="найм")
-async def start_raid(ctx, date: str, time_raid: str, time_start: str, server: str, nickname: str, slots: int):
-    try:
-        raid_data['slots'] = slots
-        raid_data['taken'] = 0
-        raid_data['is_closed'] = False
+async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots: int):
+    if not ctx.author.guild_permissions.administrator:
+        await ctx.send("⛔ У вас немає прав для цієї команди.")
+        return
 
-        embed = Embed(
-            title="# Гільдійні боси з SilentCove",
-            description=f"### {date}",
-            color=0x00ffcc
-        )
+    raid_data['slots'] = slots
+    raid_data['taken'] = 0
+    raid_data['is_closed'] = False
 
-        embed.add_field(
-            name="🕐 Найм:", 
-            value=f"<t:{int(datetime.strptime(time_raid, '%H:%M').replace(tzinfo=pytz.timezone('Europe/London')).timestamp())}:t> *(можу бути афк)*\n"
-                  f"Винагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**",
-            inline=True
-        )
-        embed.add_field(
-            name="🧭 Сервер:", 
-            value=f"`{server}` *(уточніть в ПМ)*", 
-            inline=True
-        )
-        embed.add_field(
-            name="⏰ Старт:", 
-            value=f"{time_start}, після босів **LoML**", 
-            inline=True
-        )
-        embed.add_field(
-            name="🗺️ Шлях:", 
-            value="Хан ➜ Бруд ➜ Феррід ➜ CTG ➜ Футурума *(між босами 3–4 хв)*", 
-            inline=True
-        )
-        embed.add_field(
-            name="🦖 Боси:", 
-            value="3 рівня", 
-            inline=True
-        )
-        embed.add_field(
-            name="💬 Примітка:", 
-            value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.", 
-            inline=False
-        )
-        embed.add_field(name="📦 Слотів:", value=str(slots), inline=True)
-        embed.add_field(name="✅ Залишилось:", value=str(slots), inline=True)
+    embed = Embed(
+        title="# Гільдійні боси з SilentCove",
+        description=f"### {date}",
+        color=0x00ffcc
+    )
 
-        embed.add_field(name="🕵️ Шепотіть:", value=f"```diff\n{nickname}```", inline=False)
+    embed.add_field(
+        name="📌 Шепотіть:",
+        value=f"```diff\n{nickname}```",
+        inline=True
+    )
 
-        embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")
-        embed.set_footer(text="Silent Concierge | Найм активний")
+    embed.add_field(
+        name="⏰ Найм:",
+        value=f"{recruit_time} *(можу бути афк)*\nВинагорода буде роздаватись одразу, тому **почекайте 5 хвилин** після заходу й **чекніть нагороду.**",
+        inline=True
+    )
 
-        message = await ctx.send(embed=embed)
+    embed.add_field(
+        name="🏝️ Сервер:",
+        value=f"`{server}` *(уточніть в ПМ)*",
+        inline=True
+    )
 
-        raid_data['channel_id'] = ctx.channel.id
-        raid_data['message_id'] = message.id
+    embed.add_field(
+        name="⏰ Старт:",
+        value=f"{start_time}, після босів **LoML**",
+        inline=True
+    )
 
-    except Exception as e:
-        await ctx.send(f"⚠️ Сталася помилка: {e}")
+    embed.add_field(
+        name="🛤️ Шлях:",
+        value="Хан ➔ Бруд ➔ Феррід ➔ CTG на Футурума *(між босами 3–4 хв)*",
+        inline=True
+    )
 
+    embed.add_field(
+        name="🐙 Боси:",
+        value="3 рівня",
+        inline=True
+    )
 
-# --- Команда !remove ---
-@bot.command(name="remove")
-async def remove_slot(ctx):
-    if raid_data['taken'] > 0:
-        raid_data['taken'] -= 1
+    embed.add_field(
+        name="🧮 Залишилось:",
+        value=str(slots),
+        inline=True
+    )
 
-        channel = bot.get_channel(raid_data['channel_id'])
-        message = await channel.fetch_message(raid_data['message_id'])
+    embed.add_field(
+        name="📌 Примітка:",
+        value="Якщо ви **забукіровали місце в альянсі**, не протискайте прийняття до відведеного часу.",
+        inline=False
+    )
 
-        embed = message.embeds[0]
-        embed.set_field_at(index=7, name="✅ Залишилось:", value=str(raid_data['slots'] - raid_data['taken']), inline=True)
-        await message.edit(embed=embed)
+    embed.set_footer(text="Silent Concierge | Найм активний")
+    embed.set_image(url="https://i.imgur.com/Mt7OfAO.jpeg")  # 🔺 Заміни за потреби
 
-        await ctx.send("🔻 Один слот вивільнено.")
-    else:
-        await ctx.send("⚠️ Немає учасників для видалення.")
+    msg = await ctx.send(embed=embed)
+    raid_data['channel_id'] = ctx.channel.id
+    raid_data['message_id'] = msg.id
 
 # --- Команда !закрити ---
 @bot.command(name="закрити")
 async def close_raid(ctx):
+    if not ctx.author.guild_permissions.administrator:
+        await ctx.send("⛔ У вас немає прав для цієї команди.")
+        return
+
     raid_data['is_closed'] = True
 
     channel = bot.get_channel(raid_data['channel_id'])
     message = await channel.fetch_message(raid_data['message_id'])
-
     embed = message.embeds[0]
-    embed.color = 0x555555  # сірий
+    embed.color = 0x777777  # сірий
+    embed.set_field_at(index=0, name="✅ Найм завершено:", value="Всі місця зайняті або найм закрито.", inline=False)
     embed.set_footer(text="Silent Concierge | Найм завершено")
-    embed.insert_field_at(0, name="✅ Найм завершено:", value="Всі місця зайняті або найм закрито.", inline=False)
-
     await message.edit(embed=embed)
     await ctx.send("🔒 Найм закрито.")
 
