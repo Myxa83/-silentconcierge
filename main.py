@@ -58,7 +58,7 @@ async def raid_post(ctx, date, recruit_time, start_time, server, nickname, slots
     remaining = slots
 
     embed = discord.Embed(
-        title="✨ # **Гільдійні боси з SilentCove**",
+        title=" # ✨** Гільдійні боси з Ｓｉｌｅｎｔ Ｃｏｖｅ**",
         description=(
             f"📅 **Дата: {date}**\n\n"
             f"📌 **Шепотіть:**\n```ansi\n\u001b[0;31m{nickname}\u001b[0m\n```\n\n"
